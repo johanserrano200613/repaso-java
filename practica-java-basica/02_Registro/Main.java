@@ -41,10 +41,16 @@ public class Main {
                 case 2:
                     Estudiante encontrado = curso.buscarEstudiante(Entrada.texto("Nombre: "));
                     if (encontrado == null) System.out.println("No encontrado.");
-                    else System.out.println(encontrado.getNombre() + " Promedio: " + encontrado.calcularPromedio());
+                    else encontrado.mostrarInfo();
                     break;
                 case 3:
                     String nombre = Entrada.texto("Estudiante: ");
+                    Estudiante estudiante = curso.buscarEstudiante(nombre);
+                    if (estudiante == null) {
+                        System.out.println("Estudiante no encontrado.");
+                        break;
+                    }
+                    estudiante.mostrarInfo();
                     String materia = Entrada.texto("Asignatura: ");
                     double nota = Entrada.numero("Nueva nota: ", 0, 10);
                     if (curso.modificarNota(nombre, materia, nota)) System.out.println("Nota modificada.");
@@ -75,6 +81,12 @@ class Estudiante {
     public Estudiante(String nombre, int faltas) { this.nombre = nombre; this.faltas = faltas; }
     public String getNombre() { return nombre; }
     public int getFaltas() { return faltas; }
+    public void mostrarInfo() {
+        System.out.println(nombre + " Promedio: " + calcularPromedio() + " Faltas: " + faltas);
+        for (Asignatura asignatura : asignaturas) {
+            System.out.println(asignatura.getNombre() + ": " + asignatura.getNotaFinal());
+        }
+    }
     public void agregarAsignatura(Asignatura asignatura) { asignaturas.add(asignatura); }
     public Asignatura buscarAsignatura(String nombre) {
         for (Asignatura asignatura : asignaturas) {

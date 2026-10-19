@@ -5,15 +5,34 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
+        Scanner teclado = Entrada.teclado;
         ArrayList<Alumno> alumnos = new ArrayList<Alumno>();
         int cantidad = Entrada.entero("Cantidad de alumnos: ", 1, 1000);
         double suma = 0;
         double mejorNota = 0;
         for (int i = 0; i < cantidad; i++) {
             String nombre = Entrada.texto("Nombre: ");
-            double parcial1 = Entrada.numero("Parcial 1 (0-10): ", 0, 10);
-            double parcial2 = Entrada.numero("Parcial 2 (0-10): ", 0, 10);
-            double examen = Entrada.numero("Examen final (0-10): ", 0, 10);
+            // Punto 24: try-catch directamente en main, como pide el profesor.
+            double[] notas = new double[3];
+            String[] mensajes = {"Parcial 1 (0-10): ", "Parcial 2 (0-10): ", "Examen final (0-10): "};
+            for (int j = 0; j < notas.length; j++) {
+                boolean valida = false;
+                while (!valida) {
+                    try {
+                        System.out.print(mensajes[j]);
+                        notas[j] = teclado.nextDouble();
+                        teclado.nextLine();
+                        if (notas[j] >= 0 && notas[j] <= 10) valida = true;
+                        else System.out.println("La nota debe estar entre 0 y 10.");
+                    } catch (InputMismatchException error) {
+                        teclado.nextLine();
+                        System.out.println("Escriba un numero. Use punto para decimales.");
+                    }
+                }
+            }
+            double parcial1 = notas[0];
+            double parcial2 = notas[1];
+            double examen = notas[2];
             Alumno alumno = new Alumno(nombre, parcial1, parcial2, examen);
             alumnos.add(alumno);
             suma += alumno.calcularNotaOriginal();
@@ -22,6 +41,7 @@ public class Main {
         double promedio = suma / cantidad;
         System.out.println("Promedio original: " + promedio);
         // La condicion de aplicar curva viene de Practica 1.
+        System.out.println("Regla de Practica 1: solo se aplica una curva si el promedio es menor a 6.");
         if (promedio < 6) {
             int tipo = Entrada.entero("1 Curva porcentual  2 Curva segun mejor alumno: ", 1, 2);
             if (tipo == 1) {
@@ -90,7 +110,7 @@ class Alumno {
 
 // Ayuda para leer datos sin repetir la misma validacion en cada menu.
 class Entrada {
-    private static Scanner teclado = new Scanner(System.in).useLocale(Locale.US);
+    static Scanner teclado = new Scanner(System.in).useLocale(Locale.US);
     public static String texto(String mensaje) {
         String valor;
         do {

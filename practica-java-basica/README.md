@@ -31,8 +31,8 @@ TEMAS UTILIZADOS
 No se usan mapas, lambdas, streams, serializacion ni clases anidadas.
 La clase Entrada, al final de cada archivo, repite tres metodos sencillos
 para leer texto, numeros e enteros sin que el programa se cierre al
-escribir un dato incorrecto. El try-catch del punto 24 esta en su metodo
-numero, que es llamado desde el main del ejercicio de curvas.
+escribir un dato incorrecto. El try-catch del punto 24 esta directamente en main del ejercicio
+de curvas; el mismo Scanner tambien se utiliza para los otros datos.
 
 DONDE ESTA CADA PUNTO
 01_Cajero:
@@ -68,7 +68,7 @@ DetalleCompra es una clase sencilla para guardar producto y cantidad.
 21 aplicarCurvaPorcentual.
 22 curva de puntos igual a 10 menos la mayor nota del grupo.
 23 dos parciales del 30% y examen del 40%.
-24 Entrada.numero captura InputMismatchException y vuelve a preguntar.
+24 main captura InputMismatchException y vuelve a preguntar la nota.
 25 media, desviacion estandar y cantidad de recuperados.
 
 DECISIONES DEL ENUNCIADO
@@ -98,3 +98,28 @@ Se revisaron transferencias, intereses, sobregiro, bloqueo por PIN,
 notas y faltas, modificacion y guardado de reporte, descuento,
 agenda persistente, duplicados, ambas curvas, curso sin curva
 y entrada de texto en un campo numerico.
+
+CORRECCIONES TRAS LA REVISION
+- Si agenda.txt esta incompleto o contiene datos invalidos, el programa
+  bloquea el guardado manual y automatico para no sobrescribirlo.
+  Corrige el archivo y elige Cargar para habilitar nuevamente el guardado.
+  Mientras siga bloqueado, los cambios nuevos en memoria no se guardan.
+- Email: exige usuario antes de @, una sola @, dominio antes del ultimo
+  punto, texto despues del punto y ausencia de espacios. Es una validacion
+  basica; no comprueba que la direccion exista.
+- Buscar estudiante muestra sus asignaturas y notas. Modificar tambien
+  muestra las materias del estudiante antes de pedir la que se cambia.
+- El punto 24 tiene el try-catch directamente en main.
+- La regla de promedio menor a 6 se explica en pantalla. Ambas curvas
+  mantienen su formula; el sobregiro en transferencias ya era correcto.
+- Cinco programas compilados individualmente con el compilador Java 17.
+  Se repitieron 10 escenarios y se probaron otros 11 casos de regresion.
+
+EJEMPLOS PARA MOSTRAR AL PROFESOR
+- Ahorro: Ana, PIN 1234. Corriente: Luis, PIN 4321.
+- Luis puede transferir 700 desde saldo 500 y quedar en -200.
+  No puede transferir otro 1: ya alcanzo el limite de sobregiro.
+- Curva porcentual: notas 5, 5, 5 y porcentaje 10 dan nota final 5.5.
+- Curva por mejor alumno: un alumno con tres notas 8.5 y otro con tres
+  notas 2 producen promedio 5.25; la curva suma 1.5: finales 10 y 3.5.
+- Un grupo con promedio >= 6 no recibe curva, como exige Practica 1.

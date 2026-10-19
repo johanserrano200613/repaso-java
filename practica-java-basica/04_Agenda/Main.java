@@ -2,7 +2,6 @@ import java.util.Scanner;
 import java.util.InputMismatchException;
 import java.util.Locale;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -70,14 +69,24 @@ class Contacto {
 class Agenda {
     // Punto 16: lista sin limite fijo.
     private ArrayList<Contacto> contactos = new ArrayList<Contacto>();
+    // Si la carga falla, no se permite sobrescribir el archivo original.
+    private boolean permitirGuardado = true;
     // Punto 17: comprobacion con un for, sin expresiones regulares.
     public boolean agregarContacto(Contacto contacto) {
+        if (contacto.getNombre().trim().isEmpty() || contacto.getGrupo().trim().isEmpty()) return false;
         String telefono = contacto.getTelefono();
         if (telefono.length() != 9) return false;
         for (int i = 0; i < telefono.length(); i++) {
             if (telefono.charAt(i) < '0' || telefono.charAt(i) > '9') return false;
         }
-        if (!contacto.getEmail().contains("@") || !contacto.getEmail().contains(".")) return false;
+        String email = contacto.getEmail();
+        int arroba = email.indexOf("@");
+        int punto = email.lastIndexOf(".");
+        if (arroba <= 0 || arroba != email.lastIndexOf("@")) return false;
+        if (punto <= arroba + 1 || punto == email.length() - 1) return false;
+        for (int i = 0; i < email.length(); i++) {
+            if (Character.isWhitespace(email.charAt(i))) return false;
+        }
         for (Contacto actual : contactos) {
             if (actual.getNombre().equalsIgnoreCase(contacto.getNombre()) || actual.getTelefono().equals(telefono)) return false;
         }
@@ -113,6 +122,11 @@ class Agenda {
     }
     // Punto 20: cuatro lineas por contacto; no se usa serializacion.
     public void guardarEnArchivo() {
+        if (!permitirGuardado) {
+            System.out.println("No se guardo: la carga fallo. El archivo original se conserva.");
+            System.out.println("Corrija agenda.txt y use Cargar antes de guardar cambios.");
+            return;
+        }
         try {
             FileWriter archivo = new FileWriter("agenda.txt");
             for (Contacto contacto : contactos) {
@@ -129,7 +143,10 @@ class Agenda {
     }
     public void cargarDesdeArchivo() {
         File archivo = new File("agenda.txt");
-        if (!archivo.exists()) return;
+        if (!archivo.exists()) {
+            permitirGuardado = true;
+            return;
+        }
         try {
             Scanner lector = new Scanner(archivo);
             Agenda temporal = new Agenda();
@@ -148,10 +165,16 @@ class Agenda {
             lector.close();
             if (correcto) {
                 contactos = temporal.contactos;
+                permitirGuardado = true;
                 System.out.println("Agenda cargada.");
-            } else System.out.println("Archivo incompleto o invalido. No se cargo.");
+            } else {
+                permitirGuardado = false;
+                System.out.println("Archivo incompleto o invalido. No se cargo.");
+                System.out.println("Guardado bloqueado para conservar el archivo original.");
+            }
         } catch (IOException error) {
-            System.out.println("No se pudo cargar.");
+            permitirGuardado = false;
+            System.out.println("No se pudo cargar. Guardado bloqueado para conservar el archivo original.");
         }
     }
 }
